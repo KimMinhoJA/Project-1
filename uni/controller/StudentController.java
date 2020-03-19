@@ -1,5 +1,6 @@
 package kosta.uni.controller;
 
+import kosta.uni.exception.ModifyException;
 import kosta.uni.exception.NotFoundException;
 import kosta.uni.service.StudentService;
 import kosta.uni.session.Session;
@@ -10,63 +11,91 @@ import kosta.uni.vo.Student;
 
 public class StudentController {
 	private static StudentController controller = new StudentController();
-	private StudentController() {}
+
+	private StudentController() {
+		
+	}
+
 	public static StudentController getInstance() {
 		return controller;
 	}
-	
+
 	StudentService service = StudentService.getInstance();
 
-	public void login(int id, String pwd) {
-		
+	public void login(String id, String pwd) {
 		try {
-		Student st = service.login(id, pwd);
-		SessionSet ss = SessionSet.getInstance();
-		Session session = new Session();
-		session.setSessionId(id);
-		session.setAttribute("major", st.getMajor());
-		ss.add(session);
-		
-		SuccessView.successMessage("로그인굳!");
-		
-		}catch(NotFoundException e) {
-			FailView.errorMessage(e.getMessage());
-			
-		}
-	}
-	
-	public void showPersonalInfo(int id) {
-		try {
-			Student st = service.showPersonalInfo(id);
-			SuccessView.successMessage("조회하신" +id+"에 대한 정보라규~");
-			SuccessView.successMessage(st.toString());//다시
+			Student st = service.login(Integer.parseInt(id), pwd);
+			SessionSet ss = SessionSet.getInstance();
+			Session session = new Session();
+			session.setSessionId(id);
+			session.setAttribute("major", st.getMajor());
+			session.setAttribute("level", st.getClass_level());
+			ss.add(session);
+
+			SuccessView.successMessage("로그인 성공");
+
 		} catch (NotFoundException e) {
 			FailView.errorMessage(e.getMessage());
+		} catch (Exception e) {
+			FailView.errorMessage("id입력 오류");
 		}
 	}
-	
-	public void changePwd(int id, String pwd) {
+
+	public void showPersonalInfo(String id) {
 		try {
-			service.changePwd(id, pwd);
-			SuccessView.successMessage("비번 번경됫다규~");
+			Student st = service.showPersonalInfo(Integer.parseInt(id));
+			SuccessView.successMessage("조회하신" + id + "에 대한 정보");
+			SuccessView.printPersonalInfo(st);
+		} catch (NotFoundException e) {
+			FailView.errorMessage(e.getMessage());
 		} catch (Exception e) {
 			FailView.errorMessage(e.getMessage());
 		}
 	}
-	
-	public void resister(int id, String pwd) {
+
+	public void changePwd(String id, String pwd) {
 		try {
-			service.resister(id, pwd);
-			SuccessView.successMessage("회원 가입됫다규~");
-		} catch (Exception e) {		
+			service.changePwd(Integer.parseInt(id), pwd);
+			SuccessView.successMessage("비밀번호가 변경되었습니다.");
+		} catch (NotFoundException e) {
+			FailView.errorMessage(e.getMessage());
+		} catch (Exception e) {
 			FailView.errorMessage(e.getMessage());
 		}
 	}
-	public void logout(int id) {
+
+	public void resister(String id, String pwd) {
+		try {
+			service.resister(Integer.parseInt(id), pwd);
+			SuccessView.successMessage("☆★회원가입을 축하합니다★☆");
+		} catch (NotFoundException e) {
+			FailView.errorMessage(e.getMessage());
+		} catch (ModifyException e) {
+			FailView.errorMessage(e.getMessage());
+		} catch (Exception e) {
+			FailView.errorMessage("id입력 오류");
+		}
+	}
+	
+	public void logout(String id) {
 		SessionSet ss = SessionSet.getInstance();
 		ss.remove(ss.get(id));
 		SuccessView.successMessage("로그아웃 되었습니다.");
+	}
+
+	public void setGrade(String id, String grade, int credit) {
+		try {
+			if("F0".equals(grade)) {
+				return;
+			}
+			Student student = service.showPersonalInfo(Integer.parseInt(id));
+			student.setAccumulated_grade(student.getAccumulated_grade() + credit);
+			service.setGrade(student);
+			
+		}catch (Exception e) {
+			FailView.errorMessage(e.getMessage());
+		}
 		
 	}
-	
+
 }

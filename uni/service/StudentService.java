@@ -1,16 +1,17 @@
 package kosta.uni.service;
 
 import kosta.uni.dao.StudentDAO;
+import kosta.uni.exception.ModifyException;
 import kosta.uni.exception.NotFoundException;
 import kosta.uni.vo.Student;
 
 public class StudentService {
 	
 	private static StudentService stservice = new StudentService();
-	private static StudentDAO sdao;
+	private static StudentDAO dao;
 	
 	private StudentService() {
-		sdao = new StudentDAO();
+		dao = new StudentDAO();
 	}
 	
 	public static StudentService getInstance() {
@@ -26,11 +27,11 @@ public class StudentService {
 	 */
 	public Student login(int id, String pwd) throws NotFoundException {
 		
-		Student st = sdao.selectById(id);
+		Student st = dao.selectById(id);
 		if(st.getPwd() == null)
-			throw new NotFoundException("회원이 아닙니다.");
+			throw new NotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		if(!st.getPwd().equals(pwd)) {
-			throw new NotFoundException("@@@@@저리가@@@@");
+			throw new NotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		}
 		return st;
 	}
@@ -40,7 +41,7 @@ public class StudentService {
 	 * @param id
 	 */
 	public Student showPersonalInfo(int id) throws NotFoundException {		
-		return sdao.selectById(id);		
+		return dao.selectById(id);		
 	}
 	
 	/**
@@ -48,13 +49,13 @@ public class StudentService {
 	 * @param id
 	 * @param pwd
 	 */
-	public void changePwd(int id, String pwd) throws Exception {
-		Student st = sdao.selectById(id);
+	public void changePwd(int id, String pwd) throws NotFoundException, ModifyException {
+		Student st = dao.selectById(id);
 		if(st.getPwd() == null) {
-			throw new NotFoundException("회원가입부터 하라규~");
+			throw new NotFoundException("등록되지 않은 회원입니다.");
 		} else {
 		st.setPwd(pwd);
-		sdao.update(st);
+		dao.update(st);
 		}
 	}
 	
@@ -63,17 +64,21 @@ public class StudentService {
 	 * @param id
 	 * @param pwd
 	 */
-	public void resister(int id, String pwd) throws Exception {
+	public void resister(int id, String pwd) throws NotFoundException, ModifyException {
 		
-		Student st = sdao.selectById(id);
+		Student st = dao.selectById(id);
 		if(st.getPwd() != null) {
-			throw new NotFoundException("해당 ID 있다규~");
+			throw new NotFoundException("이미 등록된 회원입니다.");
 		} else {
 			st.setPwd(pwd);
-			sdao.update(st);
+			dao.update(st);
 		}
 		
 		
+	}
+
+	public void setGrade(Student student) throws ModifyException{
+		dao.update(student);	
 	}
 	
 

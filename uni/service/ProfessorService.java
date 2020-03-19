@@ -18,10 +18,10 @@ public class ProfessorService {
 	public Professor login(int id, String pwd) throws NotFoundException{
 		Professor professor = dao.selectById(id);
 		if(professor.getPwd() == null) {
-			throw new NotFoundException("회원이 아닙니다.");
+			throw new NotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		}
 		if(!professor.getPwd().equals(pwd)) {
-			throw new NotFoundException("다시 입력해 주세요");
+			throw new NotFoundException("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		}
 		return professor;
 	}
@@ -29,7 +29,7 @@ public class ProfessorService {
 	public void changePwd (int id, String pwd) throws Exception{
 	    Professor professor = dao.selectById(id);
 	    if(professor.getPwd()==null) {
-	       throw new AddException("등록되지 않은 회원입니다");
+	       throw new AddException("등록되지 않은 회원입니다.");
 	    }
 	    professor.setPwd(pwd);
 	    dao.update(professor);
@@ -39,7 +39,7 @@ public class ProfessorService {
 	 public void resister(int id, String pwd) throws Exception{
 	    Professor professor = dao.selectById(id);
 	    if(professor.getPwd()!=null) {
-	       throw new AddException(" 이미 등록된 회원입니다 ");
+	       throw new AddException("이미 등록된 회원입니다.");
 	    }
 	    professor.setPwd(pwd);
 	    dao.update(professor);

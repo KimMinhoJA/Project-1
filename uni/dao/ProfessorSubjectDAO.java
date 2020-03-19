@@ -22,7 +22,7 @@ public class ProfessorSubjectDAO {
 	 * @return
 	 * @throws NotFoundException
 	 */
-	public static List<ProfessorSubject> selectById(int id) throws NotFoundException {
+	public List<ProfessorSubject> selectById(int id) throws NotFoundException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;

@@ -2,7 +2,6 @@ package kosta.uni.controller;
 
 import java.util.List;
 
-import kosta.uni.exception.NotFoundException;
 import kosta.uni.service.ProSubService;
 import kosta.uni.session.Session;
 import kosta.uni.session.SessionSet;
@@ -24,13 +23,13 @@ ProSubService service = ProSubService.getInstance();
 	 * 교수id에 담당하는 과목들을 출력
 	 * @param id
 	 */
-	public void showMySubject(int id) {
+	public void showMySubject(String id) {
 		try {
-			List<ProfessorSubject> subjects = service.selectMySubject(id);
+			List<ProfessorSubject> subjects = service.selectMySubject(Integer.parseInt(id));
 			SuccessView.printList(subjects);
 		} catch (Exception e) {
 			e.printStackTrace();
-			FailView.errorMessage(id+"에 해당하는 과목이 없음 : "+e.getMessage());
+			FailView.errorMessage(e.getMessage());
 		}
 	}//메소드끝
 	
@@ -38,13 +37,13 @@ ProSubService service = ProSubService.getInstance();
 	 * 교수의 시간표 출력
 	 * @param id
 	 */
-	public void showSchedule(int id){
+	public void showSchedule(String id){
 		try {
-			List<ProfessorSubject> subjects = service.selectMySubject(id);
+			List<ProfessorSubject> subjects = service.selectMySubject(Integer.parseInt(id));
 			SuccessView.printSchedule(subjects);
-		} catch (NotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			FailView.errorMessage("시간표를 찾을 수 없음"+e.getMessage());
+			FailView.errorMessage(e.getMessage());
 		}
 	}
 
@@ -54,14 +53,14 @@ ProSubService service = ProSubService.getInstance();
 	 * @param id
 	 * @param subject_code
 	 */
-	public void isMySubject(int id, String code){
+	public void isMySubject(String id, String code){
 		ProfessorSubject subject;
 		try {
-			subject = service.isMySubject(id, code);
+			subject = service.isMySubject(Integer.parseInt(id), code);
 			SessionSet ss = SessionSet.getInstance();
 			Session session = ss.get(id);
-			session.setAttribute("subject", subject);
-		} catch (NotFoundException e) {
+			session.setAttribute("subject", subject.getSubject());
+		} catch (Exception e) {
 			FailView.errorMessage(e.getMessage());
 		}
 	}

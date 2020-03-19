@@ -27,9 +27,9 @@ public class SessionSet {
 	 * @param sessionId
 	 * @return
 	 */
-	public Session get(int sessionId) {
+	public Session get(String sessionId) {
 		for(Session session : set) {
-			if(session.getSessionId() ==sessionId) {
+			if(session != null && session.getSessionId().equals(sessionId)) {
 				return session;
 			}
 		}

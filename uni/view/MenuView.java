@@ -9,6 +9,8 @@ import kosta.uni.controller.StudentController;
 import kosta.uni.controller.SubjectController;
 import kosta.uni.session.Session;
 import kosta.uni.session.SessionSet;
+import kosta.uni.vo.Major;
+import kosta.uni.vo.Subject;
 
 public class MenuView {
 	private ProfessorController proController = ProfessorController.getInstance();
@@ -24,7 +26,10 @@ public class MenuView {
 
 	public void menu() {
 		while (outMenu) {
-			System.out.println("1. 로그인  2. 회원가입  9. 종료");
+			System.out.println("=============================================");
+			System.out.println("=============Kosta University================");
+			System.out.println("====== 1. 로그인  2. 회원가입  9. 종료 ======");
+			System.out.println("=============================================");
 			System.out.print("입력 >> ");
 			switch (sc.nextLine()) {
 			case "1":
@@ -37,50 +42,72 @@ public class MenuView {
 				outMenu = false;
 				break;
 			default:
-				System.out.println("번호를 잘못 입력하셨습니다.");
+				System.out.println("Error : 번호를 잘못 입력하셨습니다.");
+				System.out.println();
 				break;
 			}
 		}
 	}
 
 	public void login() {
-		System.out.println("==로그인==");
-		System.out.println("1. 학생 로그인  2. 교수 로그인  9. 나가기");
-		System.out.print("입력 >> ");
-		switch (sc.nextLine()) {
-		case "1":
-			stuLogin();
-			break;
-		case "2":
-			proLogin();
-			break;
-		case "9":
-			System.out.println("나가기");
-			break;
+		System.out.println();
+
+		System.out.println("=============================================");
+		System.out.println("=================== 로그인 ==================");
+		
+		while (outMenu) {
+			System.out.println("== 1. 학생 로그인  2. 교수 로그인  9. 나가기 ==");
+			System.out.println("=============================================");
+			System.out.print("입력 >> ");
+			switch (sc.nextLine()) {
+			case "1":
+				stuLogin();
+				break;
+			case "2":
+				proLogin();
+				break;
+			case "9":
+				System.out.println("나가기");
+				outMenu = false;
+				break;
+			default:
+				System.out.println("Error : 번호를 잘못 입력하셨습니다.");
+			}
 		}
+		outMenu = true;
 	}
 
 	public void resister() {
-		System.out.println("==회원가입==");
-		System.out.println("1. 학생  2. 교수  9. 나가기");
-		System.out.print("입력 >> ");
-		switch (sc.nextLine()) {
-		case "1":
-			stuResister();
-			break;
-		case "2":
-			proResister();
-			break;
-		case "9":
-			System.out.println("나가기");
-			break;
+		System.out.println();
+		System.out.println("=============================================");
+		System.out.println("================== 회원가입 =================");
+		while (outMenu) {
+			System.out.println("=============================================");
+			System.out.println("======== 1. 학생  2. 교수  9. 나가기 ========");
+			System.out.println("=============================================");
+			System.out.print("입력 >> ");
+			switch (sc.nextLine()) {
+			case "1":
+				stuResister();
+				break;
+			case "2":
+				proResister();
+				break;
+			case "9":
+				outMenu = false;
+				break;
+			default:
+				System.out.println("Error : 번호를 잘못 입력하셨습니다.");
+				System.out.println();
+			}
 		}
+		outMenu = true;
 	}
 
 	public void stuLogin() {
 		System.out.println("==학생모드 로그인==");
 		System.out.print("ID : ");
-		int id = Integer.parseInt(sc.nextLine());
+		String id = sc.nextLine();
 		System.out.print("Password : ");
 		String pwd = sc.nextLine();
 
@@ -117,21 +144,27 @@ public class MenuView {
 				System.out.println("현재 비밀번호를 입력하세요.");
 				System.out.print("입력 >> ");
 				String newpwd = sc.nextLine();
-				
+
 				if (!pwd.equals(newpwd)) {
 					System.out.println("비밀번호가 올바르지 않습니다.");
 					break;
 				}
 				System.out.println("변경하실 비밀번호를 입력하세요.");
 				System.out.println("입력 >> ");
-				pwd = sc.nextLine();
+				newpwd = sc.nextLine();
+				if(newpwd.length() == 0) {
+					System.out.println("미입력.");
+					break;
+				}
+				pwd = newpwd;
 				stuController.changePwd(id, pwd);
 				break;
 			case "9":
 				stuController.logout(id);
 				outMenu = false;
 				break;
-
+			default : 
+				System.out.println("번호를 잘못 입력하셨습니다.");
 			}
 		}
 		outMenu = true;
@@ -140,7 +173,7 @@ public class MenuView {
 	public void proLogin() {
 		System.out.println("==교수모드 로그인==");
 		System.out.print("ID : ");
-		int id = Integer.parseInt(sc.nextLine());
+		String id = sc.nextLine();
 		System.out.print("Password : ");
 		String pwd = sc.nextLine();
 
@@ -163,15 +196,16 @@ public class MenuView {
 				grantMySubjectStudent(id);
 				break;
 			case "2":
+				proSubController.showMySubject(id);
 				System.out.println("성적 확인할 과목코드를 입력하세요.");
 				System.out.print("입력 >> ");
-
-				proSubController.isMySubject(id, sc.nextLine());
+				String subject_code = sc.nextLine();
+				proSubController.isMySubject(id, subject_code);
 				if (session.getAttribute("subject") == null) {
 					System.out.println("해당과목의 담당교수가 아닙니다.");
 					break;
 				}
-				comSubController.showMySubjectStudentGrade(session, THISTERM);
+				comSubController.showMySubjectStudentGrade(id, subject_code, THISTERM);
 				break;
 			case "3":
 				proSubController.showSchedule(id);
@@ -181,14 +215,19 @@ public class MenuView {
 				System.out.println("현재 비밀번호를 입력하세요.");
 				System.out.print("입력 >> ");
 				String newpwd = sc.nextLine();
-				
+
 				if (!pwd.equals(newpwd)) {
 					System.out.println("비밀번호가 올바르지 않습니다.");
 					return;
 				}
 				System.out.println("변경하실 비밀번호를 입력하세요.");
 				System.out.println("입력 >> ");
-				pwd = sc.nextLine();
+				newpwd = sc.nextLine();
+				if(newpwd.length() == 0) {
+					System.out.println("미입력.");
+					break;
+				}
+				pwd = newpwd;
 				proController.changePwd(id, pwd);
 				break;
 			case "9":
@@ -204,30 +243,36 @@ public class MenuView {
 	}
 
 	public void stuResister() {
-		System.out.println("==학생 회원가입==");
-		System.out.println("학생 번호를 입력하세요.");
+		System.out.println();
+		System.out.println("=============================================");
+		System.out.println("=============== 학생 회원가입 ===============");
+		System.out.println("========== 학생 번호를 입력하세요. ==========");
 		System.out.print("입력 >> ");
-		int pro_id = Integer.parseInt(sc.nextLine());
-		System.out.println("비밀번호를 입력하세요.");
+		String pro_id = sc.nextLine();
+		System.out.println("========== 비밀번호를 입력하세요. ===========");
 		System.out.print("입력 >> ");
 		String pwd = sc.nextLine();
 		stuController.resister(pro_id, pwd);
+		outMenu = false;
 	}
 
 	public void proResister() {
 		System.out.println("==교수 회원가입==");
 		System.out.println("교수 번호를 입력하세요.");
 		System.out.print("입력 >> ");
-		int pro_id = Integer.parseInt(sc.nextLine());
+		String pro_id = sc.nextLine();
 		System.out.println("비밀번호를 입력하세요.");
 		System.out.print("입력 >> ");
 		String pwd = sc.nextLine();
 		proController.resister(pro_id, pwd);
+		outMenu = false;
 	}
 
 ////////////////////////////////////////////////////
 ////////학생모드 기능
-	public void applyChangeSubject(int id) {
+	public void applyChangeSubject(String id) {
+		SessionSet ss = SessionSet.getInstance();
+		Session session = ss.get(id);
 		while (outMenu) {
 			System.out.println("================수강신청=================");
 			System.out.println("===1.과목조회 2.신청 3.신청 내역 삭제 9.나가기====");
@@ -235,14 +280,21 @@ public class MenuView {
 			switch (sc.nextLine()) {
 			case "1":
 				System.out.println("==과목 조회==");
-				System.out.println("1. 전체 과목  2. 전공 과목  9. 나가기");
+				System.out.println("1. 전체 과목  2. 전공 과목  3. 교양 과목  9. 나가기");
 				System.out.print("입력 >> ");
 				switch (sc.nextLine()) {
 				case "1":
 					subController.showAllSubject();
 					break;
 				case "2":
-					subController.showMajorSubject(id);
+					if (!(session.getAttribute("major") instanceof Major)) {
+						System.out.println("학과 오류");
+						break;
+					}
+					subController.showMajorSubject(((Major) session.getAttribute("major")).getMajor_number());
+					break;
+				case "3" : 
+					subController.showMajorSubject(0);
 					break;
 				case "9":
 					break;
@@ -252,13 +304,30 @@ public class MenuView {
 				System.out.println("==수강신청==");
 				System.out.println("신청할 과목코드 입력");
 				System.out.print("입력 >> ");
-				comSubController.applySubject(sc.nextLine(), id);
+				String subject_code = sc.nextLine();
+				subController.limitCheck(subject_code, id);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					break;
+				}
+				comSubController.duplicateCheck(id, subject_code, THISTERM);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					break;
+				}
+				comSubController.scheduleCheck(id, subject_code, THISTERM);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					break;
+				}
+				comSubController.applySubject(subject_code, id, THISTERM);
 				break;
 			case "3":
 				System.out.println("==수강내역 삭제==");
-				comSubController.shoMyApplyInfo(id, THISTERM);
+				comSubController.showMyApplyInfo(id, THISTERM);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					break;
+				}
+				
 				System.out.println("삭제할 과목번호 입력");
-				System.out.print("입력");
+				System.out.print("입력 >> ");
 				comSubController.deleteApply(sc.nextLine(), id);
 				break;
 			case "9":
@@ -271,7 +340,7 @@ public class MenuView {
 		outMenu = true;
 	}
 
-	public void showGrade(int id) {
+	public void showGrade(String id) {
 		System.out.println("==성적 조회==");
 		System.out.println("1. 전체 성적  2. 학기별 성적  9. 나가기");
 		System.out.print("입력 >> ");
@@ -287,22 +356,24 @@ public class MenuView {
 			break;
 		case "9":
 			break;
+		default : 
+			System.out.println("잘못된 번호입력, 상위 메뉴로 나갑니다.");
 		}
 	}
 
-	public void showPersonalInfo(int id) {
+	public void showPersonalInfo(String id) {
 		System.out.println("==개인정보 조회==");
 		stuController.showPersonalInfo(id);
 	}
 
-	public void showStudentSchedule(int id) {
+	public void showStudentSchedule(String id) {
 		System.out.println("==시간표 조회==");
 		comSubController.showSchedule(id, THISTERM);
 	}
 
 	/////////////////////////////////////////////////
 	/// 교수모드 기능
-	public void grantMySubjectStudent(int id) {
+	public void grantMySubjectStudent(String id) {
 		SessionSet ss = SessionSet.getInstance();
 		Session session = ss.get(id);
 		System.out.println("==성적 부여==");
@@ -317,14 +388,14 @@ public class MenuView {
 			case "2":
 				System.out.println("출석부를 확인할 과목코드를 입력하세요.");
 				System.out.print("입력 >> ");
-
-				proSubController.isMySubject(id, sc.nextLine());
+				String subject_code = sc.nextLine();
+				proSubController.isMySubject(id, subject_code);
 
 				if (session.getAttribute("subject") == null) {
 					System.out.println("해당과목의 담당교수가 아닙니다.");
 					break;
 				}
-				comSubController.showMySubjectStudent(THISTERM);
+				comSubController.showMySubjectStudent(id, subject_code, THISTERM);
 				break;
 			case "3":
 				System.out.println("성적 부여할 과목 입력하세요.");
@@ -338,13 +409,16 @@ public class MenuView {
 
 				System.out.println("성적을 입력할 학생번호 입력하세요.");
 				System.out.print("입력 >> ");
-				int student_id = Integer.parseInt(sc.nextLine());
+				String student_id = sc.nextLine();
 
 				System.out.println("부여할 성적을 입력하세요.");
 				System.out.print("입력 >> ");
 				String grade = sc.nextLine();
 
-				comSubController.grantGrade(student_id, session.getAttribute("subject"), grade, THISTERM);
+				comSubController.grantGrade(id, student_id, ((Subject)(session.getAttribute("subject"))).getSubject_code(), grade, THISTERM);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					stuController.setGrade(student_id, grade, ((Subject)(session.getAttribute("subject"))).getCredit());
+				}
 				break;
 			case "9":
 				outMenu = false;
