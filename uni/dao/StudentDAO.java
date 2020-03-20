@@ -112,7 +112,8 @@ public class StudentDAO {
 			}
 		} catch (Exception e) {
 			throw new ModifyException(e.getMessage());
-
+		} finally {
+			MyConnection.close(con, stmt,null);
 		}
 
 	}	

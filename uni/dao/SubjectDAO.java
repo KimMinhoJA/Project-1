@@ -87,6 +87,8 @@ public class SubjectDAO {
 			}
 		} catch (Exception e) {
 			throw new NotFoundException(e.getMessage());
+		}finally {
+			MyConnection.close(con, pstmt, rs);
 		}
 		return list;
 

@@ -136,7 +136,6 @@ public class ComSubController {
 
 	/**
 	 * 해당학기 성적 조회
-	 * 
 	 * @param id
 	 * @param thisterm
 	 */
@@ -178,7 +177,6 @@ public class ComSubController {
 
 	/**
 	 * 해당 학기의 해당 과목 학생들 조회
-	 * 
 	 * @param code
 	 * @param term
 	 */
