@@ -22,6 +22,11 @@ public class StudentController {
 
 	StudentService service = StudentService.getInstance();
 
+	/**
+	 * 학생 로그인
+	 * @param id
+	 * @param pwd
+	 */
 	public void login(String id, String pwd) {
 		try {
 			Student st = service.login(Integer.parseInt(id), pwd);
@@ -41,6 +46,10 @@ public class StudentController {
 		}
 	}
 
+	/**
+	 * 학생 신상조회
+	 * @param id
+	 */
 	public void showPersonalInfo(String id) {
 		try {
 			Student st = service.showPersonalInfo(Integer.parseInt(id));
@@ -53,6 +62,11 @@ public class StudentController {
 		}
 	}
 
+	/**
+	 * 학생 비번 변경
+	 * @param id
+	 * @param pwd
+	 */
 	public void changePwd(String id, String pwd) {
 		try {
 			service.changePwd(Integer.parseInt(id), pwd);
@@ -64,6 +78,11 @@ public class StudentController {
 		}
 	}
 
+	/**
+	 * 학생 회원가입
+	 * @param id
+	 * @param pwd
+	 */
 	public void resister(String id, String pwd) {
 		try {
 			service.resister(Integer.parseInt(id), pwd);
@@ -77,18 +96,32 @@ public class StudentController {
 		}
 	}
 	
+	/**
+	 * 학생 로그아웃
+	 * @param id
+	 */
 	public void logout(String id) {
 		SessionSet ss = SessionSet.getInstance();
 		ss.remove(ss.get(id));
 		SuccessView.successMessage("로그아웃 되었습니다.");
 	}
 
-	public void setGrade(String id, String grade, int credit) {
+	/**
+	 * 학생의 누적 학점을 세팅
+	 * @param id
+	 * @param grade
+	 * @param credit
+	 */
+	public void setGrade(String pro_id, String stud_id, String grade, int credit) {
 		try {
-			if("F0".equals(grade)) {
+			SessionSet ss = SessionSet.getInstance();
+			Session session = ss.get(pro_id);
+			session.remove("subject");
+			session.remove("check");
+			if("F0".equals(grade) || grade == null) {
 				return;
 			}
-			Student student = service.showPersonalInfo(Integer.parseInt(id));
+			Student student = service.showPersonalInfo(Integer.parseInt(stud_id));
 			student.setAccumulated_grade(student.getAccumulated_grade() + credit);
 			service.setGrade(student);
 			

@@ -2,7 +2,6 @@ package kosta.uni.controller;
 
 import java.util.List;
 
-import kosta.uni.exception.ModifyException;
 import kosta.uni.exception.NotFoundException;
 import kosta.uni.service.ComSubService;
 import kosta.uni.session.Session;
@@ -27,7 +26,6 @@ public class ComSubController {
 
 	/**
 	 * 교수가 학생의 성적 부여
-	 * 
 	 * @param pro_id
 	 * @param stu_id
 	 * @param code
@@ -35,9 +33,10 @@ public class ComSubController {
 	 * @param term
 	 */
 	public void grantGrade(String pro_id, String stu_id, String code, String grade, String term) {
-		try {
+		
 			SessionSet ss = SessionSet.getInstance();
 			Session session = ss.get(pro_id);
+			try {
 			
 			CompleteSubject cs = new CompleteSubject();
 			cs.setGrade(new Grade());
@@ -50,11 +49,10 @@ public class ComSubController {
 
 			service.grantGrade(cs);
 			SuccessView.successMessage("성적 부여 성공");
-			session.setAttribute("check", "true");
-		} catch (ModifyException e) {
+			session.setAttribute("check", true);
+		}catch (Exception e) {
 			FailView.errorMessage(e.getMessage());
-		} catch (Exception e) {
-			FailView.errorMessage("학생 id입력 오류");
+			session.remove("subject");
 		}
 	}
 
@@ -69,6 +67,7 @@ public class ComSubController {
 			SessionSet ss = SessionSet.getInstance();
 			Session session = ss.get(id);
 			session.remove("check");
+			session.remove("subject");
 			CompleteSubject cs = new CompleteSubject();
 			cs.setStudent(new Student());
 			cs.getStudent().setStudent_id(Integer.parseInt(id));
@@ -236,19 +235,37 @@ public class ComSubController {
 	 * @param code
 	 * @param thisterm
 	 */
-	public void scheduleCheck(String id, String code, String term) {
+	public void scheduleCheck(String id, String term) {
 		SessionSet ss = SessionSet.getInstance();
 		Session session = ss.get(id);
 		Subject subject = (Subject)session.getAttribute("subject");
-		session.remove("subject");
 		session.remove("check");
 		
 		try {
 			service.scheduleCheck(subject, Integer.parseInt(id), term);
-			
+			session.remove("subject");
 			FailView.errorMessage("시간표 중복입니다.");
 		}catch (Exception e) {
 			session.setAttribute("check", true);
+		}
+	}
+
+	/**
+	 * 최대 신청학점 제한
+	 * @param id
+	 * @param term
+	 */
+	public void limitCreditCheck(String id, String term) {
+		SessionSet ss = SessionSet.getInstance();
+		Session session = ss.get(id);
+		Subject subject = (Subject)session.getAttribute("subject");
+		session.remove("check");
+		try {
+			service.limitCreditCheck(Integer.parseInt(id), term, subject.getCredit());
+			session.setAttribute("check", true);
+		}catch (Exception e) {
+			FailView.errorMessage(e.getMessage());
+			session.remove("subject");
 		}
 	}
 }

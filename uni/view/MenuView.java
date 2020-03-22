@@ -301,7 +301,7 @@ public class MenuView {
 				}
 				break;
 			case "2":
-				System.out.println("==수강신청==");
+				System.out.println("==수강신청(최대 10학점)==");
 				System.out.println("신청할 과목코드 입력");
 				System.out.print("입력 >> ");
 				String subject_code = sc.nextLine();
@@ -313,7 +313,11 @@ public class MenuView {
 				if(!(session.getAttribute("check") instanceof Boolean)) {
 					break;
 				}
-				comSubController.scheduleCheck(id, subject_code, THISTERM);
+				comSubController.scheduleCheck(id, THISTERM);
+				if(!(session.getAttribute("check") instanceof Boolean)) {
+					break;
+				}
+				comSubController.limitCreditCheck(id, THISTERM);
 				if(!(session.getAttribute("check") instanceof Boolean)) {
 					break;
 				}
@@ -416,8 +420,8 @@ public class MenuView {
 				String grade = sc.nextLine();
 
 				comSubController.grantGrade(id, student_id, ((Subject)(session.getAttribute("subject"))).getSubject_code(), grade, THISTERM);
-				if(!(session.getAttribute("check") instanceof Boolean)) {
-					stuController.setGrade(student_id, grade, ((Subject)(session.getAttribute("subject"))).getCredit());
+				if((session.getAttribute("check") instanceof Boolean)) {
+					stuController.setGrade(id, student_id, grade, ((Subject)(session.getAttribute("subject"))).getCredit());
 				}
 				break;
 			case "9":

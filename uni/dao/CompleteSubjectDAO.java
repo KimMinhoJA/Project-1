@@ -92,11 +92,11 @@ public class CompleteSubjectDAO {
 			pstmt.setString(3, completeSubject.getSubject().getSubject_code());
 
 			if (pstmt.executeUpdate() == 0) {
-				throw new ModifyException("수정에 실패하셨습니다.");
+				throw new ModifyException("수강생 정보가 없거나 이미 성적을 입력하셨습니다.");
 			}
 
 		} catch (Exception e) {
-			throw new ModifyException("수강과목 수정 오류");
+			throw new ModifyException(e.getMessage());
 		} finally {
 			MyConnection.close(con, pstmt, null);
 		}

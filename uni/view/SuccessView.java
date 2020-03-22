@@ -203,23 +203,26 @@ public class SuccessView {
 	 * @param subjects
 	 */
 	public static void printApplySubject(List<CompleteSubject> subjects) {
-	      for (CompleteSubject subject : subjects) {
-	         String subject_code = subject.getSubject().getSubject_code();
-	         String subject_name = subject.getSubject().getSubject_name();
-	         int credit = subject.getSubject().getCredit();
-	         String start_time = subject.getSubject().getStart_time();
-	         int run_time = subject.getSubject().getRun_time();
-	         
-	         String frontsiganpho = start_time.substring(0, 1);
-	         String startsiganpho = start_time.substring(1);
-	         int backsiganpho = Integer.parseInt(startsiganpho) + run_time;
-	         
-	         String show = "과목코드 : [" + subject_code + "] 과목명 : [" +subject_name + "] 학점 : [" + Integer.toString(credit) +"]" +
-	                     " 시간표 : [" + frontsiganpho + startsiganpho + " ~ " + Integer.toString(backsiganpho) + "]";
-	         System.out.println(show);
-	      }
-	      System.out.println();
-	   }
+		for (CompleteSubject subject : subjects) {
+			if (subject.getGrade().getGrade_point() != null) {
+				continue;
+			}
+			String subject_code = subject.getSubject().getSubject_code();
+			String subject_name = subject.getSubject().getSubject_name();
+			int credit = subject.getSubject().getCredit();
+			String start_time = subject.getSubject().getStart_time();
+			int run_time = subject.getSubject().getRun_time();
+
+			String frontsiganpho = start_time.substring(0, 1);
+			String startsiganpho = start_time.substring(1);
+			int backsiganpho = Integer.parseInt(startsiganpho) + run_time;
+
+			String show = "과목코드 : [" + subject_code + "] 과목명 : [" + subject_name + "] 학점 : [" + Integer.toString(credit)
+					+ "]" + " 시간표 : [" + frontsiganpho + startsiganpho + " ~ " + Integer.toString(backsiganpho) + "]";
+			System.out.println(show);
+		}
+		System.out.println();
+	}
 
 	/**
 	 * list의 내용을 학생 성적표 형태로 출력
@@ -241,6 +244,9 @@ public class SuccessView {
 		for (CompleteSubject cs : list) {
 			String subject_name = cs.getSubject().getSubject_name();
 			String grade = cs.getGrade().getGrade_point();
+			if (grade == null) {
+				continue;
+			}
 			Double dou = cs.getGrade().getScore();
 			int cre = cs.getSubject().getCredit();
 			if (subject_name.length() != a) {
@@ -281,6 +287,9 @@ public class SuccessView {
 		for (CompleteSubject cs : list) {
 			String subject_name = cs.getSubject().getSubject_name();
 			String grade = cs.getGrade().getGrade_point();
+			if (grade == null) {
+				continue;
+			}
 			Double dou = cs.getGrade().getScore();
 			int cre = cs.getSubject().getCredit();
 			if (subject_name.length() != a) {
@@ -331,6 +340,9 @@ public class SuccessView {
 
 		System.out.println("=======시간표========");
 		for (CompleteSubject cs : subjects) {
+			if (cs.getGrade().getGrade_point() != null) {
+				continue;
+			}
 			String start = cs.getSubject().getStart_time();// 월12
 			int time = Integer.parseInt(start.substring(1));// 12
 			String day = start.substring(0, 1); // 월
@@ -404,60 +416,64 @@ public class SuccessView {
 		System.out.println();
 
 	}
-	
+
 	public static void printMajorSubject(List<Subject> list) {
-	      int a = 12;
-	      String str = "";
-	      String newstartsigan = "";
-	      String major_name = list.get(0).getMajor().getMajor_name();
-	      String newMajor_name ="";
-	      if(major_name.length() <= 2) {
-	         newMajor_name = "☆★☆★ "+major_name+" ";
-	      }  else if(major_name.length() <=4) {
-	         newMajor_name = "☆★ " + major_name + " ";
-	      } else {
-	         newMajor_name = major_name;
-	      }
-	      
-	      
-	      System.out.println("==========================================================================================================");
-	      System.out.println("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★" + newMajor_name + "과목 ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
-	      System.out.println("==========================================================================================================");
-	      System.out.println("| "+" 과목코드 |\t"+" \t"+" 과목명\t"+"\t      |      "+"학점   "+" |    " +"   학년\t |"+"\t   " +"시간표"+" \t |");
-	      newMajor_name = "";      
-	      for (Subject sub : list) {
-	         String subCode = sub.getSubject_code();
-	         String subName = sub.getSubject_name();
-	         int subCredit = sub.getCredit();
-	         int subLimit = sub.getLimit();
-	         String subTime = sub.getStart_time();
-	         int subRuntime = sub.getRun_time();
-	         
-	         if(subName.length() != a) {
-	             int ab = a-(subName.length());
-	             for(int t=0 ; t<=ab ; t++) {
-	                str += "　";
-	             }
-	         }
-	          String frontsiganpho = subTime.substring(0, 1);
-	            String startsiganpho = subTime.substring(1);
-	            int startsigan = Integer.parseInt(startsiganpho);
-	            int length = (int) (Math.log10(startsigan) + 1);
-	            if (length == 1) {
-	               newstartsigan = startsigan + " ";
-	            } else {
-	               newstartsigan = startsigan + "";
-	            }
+		int a = 12;
+		String str = "";
+		String newstartsigan = "";
+		String major_name = list.get(0).getMajor().getMajor_name();
+		String newMajor_name = "";
+		if (major_name.length() <= 2) {
+			newMajor_name = "☆★☆★ " + major_name + " ";
+		} else if (major_name.length() <= 4) {
+			newMajor_name = "☆★ " + major_name + " ";
+		} else {
+			newMajor_name = major_name;
+		}
 
-	             int backsiganpho = startsigan + subRuntime;
-	         System.out.println("==========================================================================================================");
-	         String show = "|  ["+subCode+ "]   |\t[" +subName+ "]"+ str +"  |      ["+subCredit +"]     |        ["  + subLimit +"] \t | \t[" 
-	                  + frontsiganpho + newstartsigan + " ~ " + Integer.toString(backsiganpho)+ "] \t |";
-	         System.out.println(show);
-	         str = "";
-	      }
-	      System.out.println("==========================================================================================================");
-	   }
+		System.out.println(
+				"==========================================================================================================");
+		System.out.println("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★" + newMajor_name + "과목 ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+		System.out.println(
+				"==========================================================================================================");
+		System.out.println("| " + " 과목코드 |\t" + " \t" + " 과목명\t" + "\t      |      " + "학점   " + " |    " + "   학년\t |"
+				+ "\t   " + "시간표" + " \t |");
+		newMajor_name = "";
+		for (Subject sub : list) {
+			String subCode = sub.getSubject_code();
+			String subName = sub.getSubject_name();
+			int subCredit = sub.getCredit();
+			int subLimit = sub.getLimit();
+			String subTime = sub.getStart_time();
+			int subRuntime = sub.getRun_time();
 
+			if (subName.length() != a) {
+				int ab = a - (subName.length());
+				for (int t = 0; t <= ab; t++) {
+					str += "　";
+				}
+			}
+			String frontsiganpho = subTime.substring(0, 1);
+			String startsiganpho = subTime.substring(1);
+			int startsigan = Integer.parseInt(startsiganpho);
+			int length = (int) (Math.log10(startsigan) + 1);
+			if (length == 1) {
+				newstartsigan = startsigan + " ";
+			} else {
+				newstartsigan = startsigan + "";
+			}
+
+			int backsiganpho = startsigan + subRuntime;
+			System.out.println(
+					"==========================================================================================================");
+			String show = "|  [" + subCode + "]   |\t[" + subName + "]" + str + "  |      [" + subCredit
+					+ "]     |        [" + subLimit + "] \t | \t[" + frontsiganpho + newstartsigan + " ~ "
+					+ Integer.toString(backsiganpho) + "] \t |";
+			System.out.println(show);
+			str = "";
+		}
+		System.out.println(
+				"==========================================================================================================");
+	}
 
 }

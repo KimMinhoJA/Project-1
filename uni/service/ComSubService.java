@@ -112,14 +112,33 @@ public class ComSubService {
 		return dao.selectByCodeTerm(code, term);
 	}
 
+	/**
+	 * 성적 부여
+	 * @param cs
+	 * @throws ModifyException
+	 */
 	public void grantGrade(CompleteSubject cs) throws ModifyException{
 		dao.update(cs);
 	}
 
+	/**
+	 * 이미 들은과목인지 체크
+	 * @param id
+	 * @param subject_code
+	 * @param term
+	 * @throws NotFoundException
+	 */
 	public void duplicateCheck(int id, String subject_code, String term) throws NotFoundException{
 		dao.selectByIdCode(id, subject_code);
 	}
 
+	/**
+	 * 시간표 중복 체크
+	 * @param subject
+	 * @param id
+	 * @param term
+	 * @throws NotFoundException
+	 */
 	public void scheduleCheck(Subject subject, int id, String term) throws NotFoundException{
 		List<CompleteSubject> list = dao.selectByIdTerm(id, term);
 		int sub_start = new Integer(subject.getStart_time().substring(1));
@@ -149,6 +168,25 @@ public class ComSubService {
 		
 		if(!check) {
 			throw new NotFoundException();
+		}
+	}
+
+	/**
+	 * 최대 신청학점 제한
+	 * @param id
+	 * @param term
+	 * @param credit
+	 */
+	public void limitCreditCheck(int id, String term, int credit) throws Exception{
+		List<CompleteSubject> list = dao.selectByIdTerm(id, term);
+		
+		int limitcredit = 10;
+		for(CompleteSubject cs : list) {
+			limitcredit -= cs.getSubject().getCredit();
+		}
+		
+		if(limitcredit < credit) {
+			throw new Exception("최대 신청 학점을 넘어섰습니다.");
 		}
 	}
 }
